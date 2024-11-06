@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restaurant_management.LoginController">
+    <children>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <AnchorPane prefHeight="400.0" prefWidth="300.0" styleClass="left-form" stylesheets="@login.css">
+               <children>
+                  <FontAwesomeIcon fill="#6991c7" glyphName="USERS" layoutX="120.0" layoutY="109.0" size="5em" />
+                  <Label layoutX="119.0" layoutY="136.0" stylesheets="@login.css" text="Sign In" textFill="#6991c7">
+                     <font>
+                        <Font name="Berlin Sans FB" size="24.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="username" layoutX="57.0" layoutY="174.0" onAction="#login" prefHeight="25.0" prefWidth="189.0" promptText="username" styleClass="textfield" stylesheets="@login.css" />
+                  <PasswordField fx:id="password" layoutX="57.0" layoutY="212.0" onAction="#login" prefHeight="25.0" prefWidth="189.0" promptText="password" styleClass="textfield" stylesheets="@login.css" />
+                  <Button fx:id="loginBtn" layoutX="118.0" layoutY="250.0" mnemonicParsing="false" onAction="#login" prefHeight="25.0" prefWidth="64.0" styleClass="login-btn" stylesheets="@login.css" text="Login" />
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutX="300.0" prefHeight="400.0" prefWidth="300.0" styleClass="right-form" stylesheets="@login.css">
+               <children>
+                  <FontAwesomeIcon fill="WHITE" glyphName="BUILDING" layoutX="92.0" layoutY="209.0" size="12em" textAlignment="CENTER" wrappingWidth="114.76188659667969" />
+                  <Label layoutX="41.0" layoutY="241.0" text="Blue Stone Restaurant" textFill="WHITE" wrapText="true">
+                     <font>
+                        <Font name="Berlin Sans FB Demi Bold" size="22.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+   </children>
+    
+    
+</AnchorPane>
