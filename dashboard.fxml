@@ -240,17 +240,17 @@
                                           <String fx:value="add" />
                                        </styleClass>
                                     </Button>
-                                    <Button fx:id="availableFD_updateBtn" layoutX="154.0" layoutY="319.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="87.0" styleClass="update-btn" stylesheets="@dashboard.css" text="UPDATE">
+                                    <Button fx:id="availableFD_updateBtn" layoutX="154.0" layoutY="319.0" mnemonicParsing="false" onAction="#availableFDUpdate" prefHeight="50.0" prefWidth="87.0" styleClass="update-btn" stylesheets="@dashboard.css" text="UPDATE">
                                        <font>
                                           <Font name="Berlin Sans FB Demi Bold" size="15.0" />
                                        </font>
                                     </Button>
-                                    <Button fx:id="availableFD_clearBtn" layoutX="33.0" layoutY="400.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="87.0" styleClass="clear-btn" stylesheets="@dashboard.css" text="CLEAR">
+                                    <Button fx:id="availableFD_clearBtn" layoutX="33.0" layoutY="400.0" mnemonicParsing="false" onAction="#availableFDClear" prefHeight="50.0" prefWidth="87.0" styleClass="clear-btn" stylesheets="@dashboard.css" text="CLEAR">
                                        <font>
                                           <Font name="Berlin Sans FB Demi Bold" size="15.0" />
                                        </font>
                                     </Button>
-                                    <Button fx:id="availableFD_deleteBtn" layoutX="154.0" layoutY="400.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="87.0" styleClass="delete-btn" stylesheets="@dashboard.css" text="DELETE">
+                                    <Button fx:id="availableFD_deleteBtn" layoutX="154.0" layoutY="400.0" mnemonicParsing="false" onAction="#availableFDDelete" prefHeight="50.0" prefWidth="87.0" styleClass="delete-btn" stylesheets="@dashboard.css" text="DELETE">
                                        <font>
                                           <Font name="Berlin Sans FB Demi Bold" size="15.0" />
                                        </font>
@@ -265,7 +265,7 @@
                                  <children>
                                     <TextField fx:id="availableFD_search" alignment="CENTER" layoutX="28.0" layoutY="22.0" prefHeight="31.0" prefWidth="282.0" promptText="Search here" styleClass="search" stylesheets="@dashboard.css" />
                                     <FontAwesomeIcon glyphName="SEARCH" layoutX="37.0" layoutY="44.0" size="1.5em" />
-                                    <TableView fx:id="availableFD_tableView" layoutX="28.0" layoutY="84.0" prefHeight="428.0" prefWidth="503.0">
+                                    <TableView fx:id="availableFD_tableView" layoutX="28.0" layoutY="84.0" onMouseClicked="#availableFDSelect" prefHeight="428.0" prefWidth="503.0">
                                       <columns>
                                         <TableColumn fx:id="availableFD_col_productID" prefWidth="93.33331298828125" text="Product ID" />
                                         <TableColumn fx:id="availableFD_col_productName" prefWidth="122.66659545898438" text="Product Name" />

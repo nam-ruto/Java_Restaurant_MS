@@ -250,6 +250,161 @@ public class DashBoardController implements Initializable{
 
     }
     
+    public void availableFDClear() {
+
+        availableFD_productID.setText("");
+        availableFD_productName.setText("");
+        availableFD_productType.getSelectionModel().clearSelection();
+        availableFD_productPrice.setText("");
+        availableFD_productStatus.getSelectionModel().clearSelection();
+
+    }
+    
+    public void availableFDSelect() {
+
+        categories catData = availableFD_tableView.getSelectionModel().getSelectedItem();
+
+        int num = availableFD_tableView.getSelectionModel().getSelectedIndex();
+
+        if ((num - 1) < -1) {
+            return;
+        }
+
+        availableFD_productID.setText(catData.getProductId());
+        availableFD_productName.setText(catData.getName());
+        availableFD_productPrice.setText(String.valueOf(catData.getPrice()));
+
+    }
+    
+    public void availableFDUpdate() {
+
+        String sql = "UPDATE food_drinks_storage SET product_name = '"
+                + availableFD_productName.getText() + "', type = '"
+                + availableFD_productType.getSelectionModel().getSelectedItem() + "', price = '"
+                + availableFD_productPrice.getText() + "', status = '"
+                + availableFD_productStatus.getSelectionModel().getSelectedItem()
+                + "' WHERE product_id = '" + availableFD_productID.getText() + "'";
+
+        connect = DataBase.connectDb();
+
+        try {
+
+            Alert alert;
+
+            if (availableFD_productID.getText().isEmpty()
+                    || availableFD_productName.getText().isEmpty()
+                    || availableFD_productType.getSelectionModel().getSelectedItem() == null
+                    || availableFD_productPrice.getText().isEmpty()
+                    || availableFD_productStatus.getSelectionModel().getSelectedItem() == null) {
+                alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Please fill all blank fields");
+                alert.showAndWait();
+            } else {
+
+                alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Are you sure you want to UPDATE Product ID: "
+                        + availableFD_productID.getText() + "?");
+
+                Optional<ButtonType> option = alert.showAndWait();
+
+                if (option.get().equals(ButtonType.OK)) {
+
+                    alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Successfully Updated!");
+                    alert.showAndWait();
+
+                    statement = connect.createStatement();
+                    statement.executeUpdate(sql);
+
+                    // TO SHOW THE DATA
+                    availableFDShowData();
+                    // TO CLEAR THE FIELDS
+                    availableFDClear();
+
+                } else {
+                    alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Cancelled.");
+                    alert.showAndWait();
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    
+    public void availableFDDelete() {
+
+        String sql = "DELETE FROM food_drinks_storage WHERE product_id = '"
+                + availableFD_productID.getText() + "'";
+
+        connect = DataBase.connectDb();
+
+        try {
+
+            Alert alert;
+
+            if (availableFD_productID.getText().isEmpty()
+                    || availableFD_productName.getText().isEmpty()
+                    || availableFD_productType.getSelectionModel().getSelectedItem() == null
+                    || availableFD_productPrice.getText().isEmpty()
+                    || availableFD_productStatus.getSelectionModel().getSelectedItem() == null) {
+                alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Please fill all blank fields");
+                alert.showAndWait();
+            } else {
+
+                alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Are you sure you want to DELETE Product ID: "
+                        + availableFD_productID.getText() + "?");
+
+                Optional<ButtonType> option = alert.showAndWait();
+
+                if (option.get().equals(ButtonType.OK)) {
+
+                    alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Successfully Deleted!");
+                    alert.showAndWait();
+
+                    statement = connect.createStatement();
+                    statement.executeUpdate(sql);
+
+                    // TO SHOW THE DATA
+                    availableFDShowData();
+                    // TO CLEAR THE FIELDS
+                    availableFDClear();
+
+                } else {
+                    alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Cancelled.");
+                    alert.showAndWait();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    
+    
     public void availableFDAdd ()
     {
         String sql = "INSERT INTO food_drinks_storage (product_id, product_name, type, price, status) "
@@ -307,7 +462,7 @@ public class DashBoardController implements Initializable{
                     // TO SHOW THE DATA
                     availableFDShowData();
                     // TO CLEAR THE FIELDS
-//                    availableFDClear();
+                    availableFDClear();
 
                 }
             }
@@ -318,6 +473,7 @@ public class DashBoardController implements Initializable{
         
         
     }
+    
     
     
     // Logout
