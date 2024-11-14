@@ -45,7 +45,7 @@
                         <AnchorPane layoutX="7.0" layoutY="14.0" prefHeight="170.0" prefWidth="200.0" stylesheets="@dashboard.css">
                            <children>
                               <FontAwesomeIcon fill="WHITE" glyphName="USER" layoutX="71.0" layoutY="89.0" size="6em" />
-                              <Label layoutX="51.0" layoutY="114.0" text="Welcome" textFill="WHITE">
+                              <Label alignment="CENTER" layoutX="18.0" layoutY="115.0" prefHeight="27.0" prefWidth="162.0" text="Welcome" textFill="WHITE">
                                  <font>
                                     <Font name="Berlin Sans FB Demi Bold" size="24.0" />
                                  </font>
@@ -193,7 +193,7 @@
                               </AnchorPane>
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="availableFD_form" layoutX="162.0" layoutY="57.0" prefHeight="554.6666666666666" prefWidth="886.6666666666666" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="availableFD_form" layoutX="162.0" layoutY="57.0" prefHeight="554.6666666666666" prefWidth="886.6666666666666" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="529.0" prefWidth="279.0" stylesheets="@dashboard.css">
                                  <styleClass>
@@ -263,7 +263,7 @@
                                     <String fx:value="shadow" />
                                  </styleClass>
                                  <children>
-                                    <TextField fx:id="availableFD_search" alignment="CENTER" layoutX="28.0" layoutY="22.0" prefHeight="31.0" prefWidth="282.0" promptText="Search here" styleClass="search" stylesheets="@dashboard.css" />
+                                    <TextField fx:id="availableFD_search" alignment="CENTER" layoutX="28.0" layoutY="22.0" onKeyTyped="#availableFDSearch" prefHeight="31.0" prefWidth="282.0" promptText="Search here" styleClass="search" stylesheets="@dashboard.css" />
                                     <FontAwesomeIcon glyphName="SEARCH" layoutX="37.0" layoutY="44.0" size="1.5em" />
                                     <TableView fx:id="availableFD_tableView" layoutX="28.0" layoutY="84.0" onMouseClicked="#availableFDSelect" prefHeight="428.0" prefWidth="503.0">
                                       <columns>
@@ -278,7 +278,7 @@
                               </AnchorPane>
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="order_form" layoutX="112.0" layoutY="123.0" prefHeight="555.0" prefWidth="881.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="order_form" layoutX="112.0" layoutY="123.0" prefHeight="555.0" prefWidth="881.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="23.0" layoutY="14.0" prefHeight="529.0" prefWidth="494.0" stylesheets="@dashboard.css">
                                  <styleClass>
@@ -289,7 +289,7 @@
                                     <TableView fx:id="order_tableView" layoutX="14.0" layoutY="14.0" prefHeight="503.0" prefWidth="466.0">
                                       <columns>
                                         <TableColumn fx:id="order_col_productID" prefWidth="98.66670608520508" text="Product ID" />
-                                        <TableColumn fx:id="order_col_producName" prefWidth="111.33334350585938" text="Product Name" />
+                                        <TableColumn fx:id="order_col_productName" prefWidth="111.33334350585938" text="Product Name" />
                                           <TableColumn fx:id="order_col_type" prefWidth="67.99995422363281" text="Type" />
                                           <TableColumn fx:id="order_col_quantity" prefWidth="86.666748046875" text="Quantity" />
                                           <TableColumn fx:id="order_col_price" prefWidth="95.33331298828125" text="Price ($)" />
@@ -308,49 +308,65 @@
                                           <Font name="Microsoft JhengHei UI Bold" size="13.0" />
                                        </font>
                                     </Label>
-                                    <ComboBox fx:id="order_productID" layoutX="136.0" layoutY="34.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboard.css" />
+                                    <ComboBox fx:id="order_productID" layoutX="136.0" layoutY="34.0" onMouseClicked="#orderProductId" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboard.css" />
                                     <Label layoutX="28.0" layoutY="94.0" prefHeight="17.0" prefWidth="93.0" text="Product Name">
                                        <font>
                                           <Font name="Microsoft JhengHei UI Bold" size="13.0" />
                                        </font>
                                     </Label>
-                                    <ComboBox fx:id="order_productName" layoutX="136.0" layoutY="86.0" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboard.css" />
+                                    <ComboBox fx:id="order_productName" layoutX="136.0" layoutY="86.0" onMouseClicked="#orderProductName" prefWidth="150.0" styleClass="textfield" stylesheets="@dashboard.css" />
                                     <Label layoutX="28.0" layoutY="141.0" prefHeight="17.0" prefWidth="93.0" text="Quantity">
                                        <font>
                                           <Font name="Microsoft JhengHei UI Bold" size="13.0" />
                                        </font>
                                     </Label>
-                                    <Spinner fx:id="order_quantity" layoutX="136.0" layoutY="137.0" styleClass="textfield" stylesheets="@dashboard.css" />
-                                    <Label layoutX="53.0" layoutY="200.0" text="TOTAL">
+                                    <Spinner fx:id="order_quantity" layoutX="136.0" layoutY="137.0" onMouseClicked="#orderQuantity" styleClass="textfield" stylesheets="@dashboard.css" />
+                                    <Label layoutX="41.0" layoutY="279.0" prefHeight="30.0" prefWidth="103.0" text="Balance">
                                        <font>
                                           <Font name="Microsoft YaHei UI Bold" size="23.0" />
                                        </font>
                                     </Label>
-                                    <Label fx:id="order_total" layoutX="161.0" layoutY="199.0" prefHeight="30.0" prefWidth="139.0" text="\$120.67">
+                                    <Label fx:id="order_balance" layoutX="167.0" layoutY="278.0" prefHeight="30.0" prefWidth="139.0" text="\$120.67">
                                        <font>
                                           <Font name="Microsoft YaHei UI Bold" size="24.0" />
                                        </font>
                                     </Label>
-                                    <Button fx:id="order_addBtn" layoutX="38.0" layoutY="265.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="98.0" styleClass="add-btn" stylesheets="@dashboard.css" text="ADD">
+                                    <Button fx:id="order_addBtn" layoutX="41.0" layoutY="339.0" mnemonicParsing="false" onAction="#orderAdd" prefHeight="49.0" prefWidth="98.0" styleClass="add-btn" stylesheets="@dashboard.css" text="ADD">
                                        <font>
                                           <Font name="Berlin Sans FB Demi Bold" size="18.0" />
                                        </font>
                                     </Button>
-                                    <Button fx:id="order_removeBtn" layoutX="177.0" layoutY="265.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="98.0" styleClass="delete-btn" stylesheets="@dashboard.css" text="REMOVE">
+                                    <Button fx:id="order_removeBtn" layoutX="180.0" layoutY="339.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="98.0" styleClass="delete-btn" stylesheets="@dashboard.css" text="REMOVE">
                                        <font>
                                           <Font name="Berlin Sans FB Demi Bold" size="18.0" />
                                        </font>
                                     </Button>
-                                    <Button fx:id="order_payBtn" layoutX="38.0" layoutY="345.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="98.0" styleClass="update-btn" stylesheets="@dashboard.css" text="PAY">
+                                    <Button fx:id="order_payBtn" layoutX="41.0" layoutY="419.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="98.0" styleClass="update-btn" stylesheets="@dashboard.css" text="PAY">
                                        <font>
                                           <Font name="Berlin Sans FB Demi Bold" size="18.0" />
                                        </font>
                                     </Button>
-                                    <Button fx:id="order_receiptBtn" layoutX="177.0" layoutY="345.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="98.0" styleClass="clear-btn" stylesheets="@dashboard.css" text="RECEIPT">
+                                    <Button fx:id="order_receiptBtn" layoutX="180.0" layoutY="419.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="98.0" styleClass="clear-btn" stylesheets="@dashboard.css" text="RECEIPT">
                                        <font>
                                           <Font name="Berlin Sans FB Demi Bold" size="18.0" />
                                        </font>
                                     </Button>
+                                    <TextField fx:id="order_amount" layoutX="138.0" layoutY="239.0" />
+                                    <Label layoutX="31.0" layoutY="243.0" prefHeight="17.0" prefWidth="93.0" text="Amount">
+                                       <font>
+                                          <Font name="Microsoft JhengHei UI Bold" size="13.0" />
+                                       </font>
+                                    </Label>
+                                    <Label layoutX="34.0" layoutY="180.0" prefHeight="30.0" prefWidth="103.0" text="Total">
+                                       <font>
+                                          <Font name="Microsoft YaHei UI Bold" size="23.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="order_total" layoutX="160.0" layoutY="179.0" prefHeight="30.0" prefWidth="139.0" text="\$120.67">
+                                       <font>
+                                          <Font name="Microsoft YaHei UI Bold" size="24.0" />
+                                       </font>
+                                    </Label>
                                  </children>
                               </AnchorPane>
                            </children>

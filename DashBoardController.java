@@ -11,11 +11,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,6 +33,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -128,21 +132,27 @@ public class DashBoardController implements Initializable{
 
     @FXML
     private Button order_btn;
+    
+    @FXML
+    private TextField order_amount;
+    
+    @FXML
+    private TableView<product> order_tableView;
 
     @FXML
-    private TableColumn<?, ?> order_col_price;
+    private TableColumn<product, String> order_col_price;
 
     @FXML
-    private TableColumn<?, ?> order_col_producName;
+    private TableColumn<product, String> order_col_productName;
 
     @FXML
-    private TableColumn<?, ?> order_col_productID;
+    private TableColumn<product, String> order_col_productID;
 
     @FXML
-    private TableColumn<?, ?> order_col_quantity;
+    private TableColumn<product, String> order_col_quantity;
 
     @FXML
-    private TableColumn<?, ?> order_col_type;
+    private TableColumn<product, String> order_col_type;
 
     @FXML
     private AnchorPane order_form;
@@ -157,16 +167,13 @@ public class DashBoardController implements Initializable{
     private ComboBox<?> order_productName;
 
     @FXML
-    private Spinner<?> order_quantity;
+    private Spinner<Integer> order_quantity;
 
     @FXML
     private Button order_receiptBtn;
 
     @FXML
     private Button order_removeBtn;
-
-    @FXML
-    private TableView<?> order_tableView;
 
     @FXML
     private Label order_total;
@@ -177,7 +184,9 @@ public class DashBoardController implements Initializable{
     private Statement statement;
     private ResultSet result;
     
-    // Logic
+    /* ------------------------------ 
+    |         Available FD          |
+    ------------------------------ */
     
     private String[] categories = {"Meal", "Drinks"};
     private String[] status = {"Available", "Not Available"};
@@ -404,9 +413,44 @@ public class DashBoardController implements Initializable{
 
     }
     
+    public void availableFDSearch() {
+
+        FilteredList<categories> filter = new FilteredList<>(availableFDList, e -> true);
+
+        availableFD_search.textProperty().addListener((observabl, newValue, oldValue) -> {
+
+            filter.setPredicate(predicateCategories -> {
+
+                if (newValue.isEmpty() || newValue == null) {
+                    return true;
+                }
+
+                String searchKey = newValue.toLowerCase();
+
+                if (predicateCategories.getProductId().toLowerCase().contains(searchKey)) {
+                    return true;
+                } else if (predicateCategories.getName().toLowerCase().contains(searchKey)) {
+                    return true;
+                } else if (predicateCategories.getType().toLowerCase().contains(searchKey)) {
+                    return true;
+                } else if (predicateCategories.getPrice().toString().contains(searchKey)) {
+                    return true;
+                } else if (predicateCategories.getStatus().toLowerCase().contains(searchKey)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        });
+
+        SortedList<categories> sortList = new SortedList<>(filter);
+
+        sortList.comparatorProperty().bind(availableFD_tableView.comparatorProperty());
+        availableFD_tableView.setItems(sortList);
+
+    }
     
-    public void availableFDAdd ()
-    {
+    public void availableFDAdd () {
         String sql = "INSERT INTO food_drinks_storage (product_id, product_name, type, price, status) "
                 + "VALUES(?,?,?,?,?)";
 
@@ -475,6 +519,259 @@ public class DashBoardController implements Initializable{
     }
     
     
+    /* ------------------------------ 
+    |            Order FD           |
+    ------------------------------ */
+    
+    private int customerId;
+    public void orderCustomerId() {
+
+        String sql = "SELECT customer_id FROM product";
+
+        connect = DataBase.connectDb();
+
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            while (result.next()) {
+                customerId = result.getInt("customer_id");
+            }
+
+            String checkData = "SELECT customer_id FROM product_info";
+
+            statement = connect.createStatement();
+            result = statement.executeQuery(checkData);
+
+            int customerInfoId = 0;
+
+            while (result.next()) {
+                customerInfoId = result.getInt("customer_id");
+            }
+
+            if (customerId == 0) {
+                customerId += 1;
+            } else if (customerId == customerInfoId) {
+                customerId += 1;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    
+    private double totalP = 0;
+    public void orderTotal() {
+        orderCustomerId();
+
+        String sql = "SELECT SUM(price) AS total_price FROM product WHERE customer_id = " + customerId;
+
+        connect = DataBase.connectDb();
+
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            if (result.next()) {
+                System.out.println(result);
+                totalP = result.getDouble("total_price");
+            }
+            orderDisplayTotal();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    
+    // Add button  
+    public void orderAdd() {
+
+        orderCustomerId();
+        orderTotal();
+
+        String sql = "INSERT INTO product "
+                + "(customer_id, product_id, product_name, type, price, quantity, date) "
+                + "VALUES(?,?,?,?,?,?,?)";
+
+        connect = DataBase.connectDb();
+
+        try {
+            String orderType = "";
+            double orderPrice = 0;
+
+            String checkData = "SELECT * FROM food_drinks_storage WHERE product_id = '"
+                    + order_productID.getSelectionModel().getSelectedItem() + "'";
+
+            statement = connect.createStatement();
+            result = statement.executeQuery(checkData);
+
+            if (result.next()) {
+                orderType = result.getString("type");
+                orderPrice = result.getDouble("price");
+            }
+
+            prepare = connect.prepareStatement(sql);
+            prepare.setInt(1, customerId);
+            prepare.setString(2, (String) order_productID.getSelectionModel().getSelectedItem());
+            prepare.setString(3, (String) order_productName.getSelectionModel().getSelectedItem());
+            prepare.setString(4, orderType);
+
+            double totalPrice = orderPrice * qty;
+
+//            prepare.setString(5, String.valueOf(totalPrice));
+            prepare.setDouble(5, totalPrice);
+
+//            prepare.setString(6, String.valueOf(qty));
+            prepare.setInt(6, qty);
+            
+            Date date = new Date();
+            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+//            prepare.setString(7, String.valueOf(sqlDate));
+            prepare.setDate(7, sqlDate);
+
+            prepare.executeUpdate();
+
+//            orderDisplayTotal();
+            orderDisplayData();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    
+    // Display total  
+    public void orderDisplayTotal() {
+//        orderTotal();
+        order_total.setText("$" + String.valueOf(totalP));
+
+    }
+        
+    private ObservableList<product> orderData;
+    
+    // Display table
+    public void orderDisplayData() {
+        orderData = orderListData();
+
+        order_col_productID.setCellValueFactory(new PropertyValueFactory<>("productId"));
+        order_col_productName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        order_col_type.setCellValueFactory(new PropertyValueFactory<>("type"));
+        order_col_price.setCellValueFactory(new PropertyValueFactory<>("price"));
+        order_col_quantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+
+        order_tableView.setItems(orderData);
+    }
+    
+    
+    
+    
+    
+    
+   
+    
+    
+    
+    public ObservableList<product> orderListData() {
+
+        orderCustomerId();
+
+        ObservableList<product> listData = FXCollections.observableArrayList();
+
+        String sql = "SELECT * FROM product WHERE customer_id = " + customerId;
+
+        connect = DataBase.connectDb();
+
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            product prod;
+
+            while (result.next()) {
+                prod = new product(result.getInt("id"),
+                         result.getString("product_id"),
+                         result.getString("product_name"),
+                         result.getString("type"),
+                         result.getDouble("price"),
+                         result.getInt("quantity"));
+
+                listData.add(prod);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return listData;
+    }
+    
+    public void orderProductId() {
+
+        String sql = "SELECT product_id FROM food_drinks_storage WHERE status = 'Available'";
+
+        connect = DataBase.connectDb();
+
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            ObservableList listData = FXCollections.observableArrayList();
+
+            while (result.next()) {
+                listData.add(result.getString("product_id"));
+            }
+
+            order_productID.setItems(listData);
+
+            orderProductName();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    
+    public void orderProductName() {
+
+        String sql = "SELECT product_name FROM food_drinks_storage WHERE product_id = '"
+                + order_productID.getSelectionModel().getSelectedItem() + "'";
+
+        connect = DataBase.connectDb();
+
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            ObservableList listData = FXCollections.observableArrayList();
+
+            while (result.next()) {
+                listData.add(result.getString("product_name"));
+            }
+
+            order_productName.setItems(listData);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    
+    private SpinnerValueFactory<Integer> spinner;
+    
+    public void orderSpinner() {
+        spinner = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 50, 0);
+
+        order_quantity.setValueFactory(spinner);
+    }
+
+    private int qty;
+
+    public void orderQuantity() {
+        qty = order_quantity.getValue();
+    }
+    
     
     // Logout
     public void logout()
@@ -506,8 +803,6 @@ public class DashBoardController implements Initializable{
         }
     }
     
-    
-    
     // Switch
     public void switchForm(ActionEvent event)
     {
@@ -533,6 +828,7 @@ public class DashBoardController implements Initializable{
             order_btn.setStyle("-fx-background-color: linear-gradient(to bottom right, #C9D6FF, #E2E2E2);");
             
             availableFDShowData();
+            availableFDSearch();
         }
         else if(event.getSource()==order_btn)
         {
@@ -543,6 +839,12 @@ public class DashBoardController implements Initializable{
             order_btn.setStyle("-fx-background-color: #3796a7; -fx-text-fill: #fff; -fx-border-width: 0px;");
             availableFD_btn.setStyle("-fx-background-color: linear-gradient(to bottom right, #C9D6FF, #E2E2E2);");
             dashboard_btn.setStyle("-fx-background-color: linear-gradient(to bottom right, #C9D6FF, #E2E2E2);");
+            
+            orderProductId();
+            orderProductName();
+            orderSpinner();
+            orderDisplayData();
+            orderDisplayTotal();
         }
         
     }
@@ -553,6 +855,11 @@ public class DashBoardController implements Initializable{
         availableFDStatus();
         availableFDTypes();
         availableFDShowData();
+        orderProductId();
+        orderProductName();
+        orderSpinner();
+        orderDisplayData();
+        orderDisplayTotal();
     }
     
 }
