@@ -286,7 +286,7 @@
                                     <String fx:value="shadow" />
                                  </styleClass>
                                  <children>
-                                    <TableView fx:id="order_tableView" layoutX="14.0" layoutY="14.0" prefHeight="503.0" prefWidth="466.0">
+                                    <TableView fx:id="order_tableView" layoutX="14.0" layoutY="14.0" onMouseClicked="#orderSelectData" prefHeight="503.0" prefWidth="466.0">
                                       <columns>
                                         <TableColumn fx:id="order_col_productID" prefWidth="98.66670608520508" text="Product ID" />
                                         <TableColumn fx:id="order_col_productName" prefWidth="111.33334350585938" text="Product Name" />
@@ -336,22 +336,22 @@
                                           <Font name="Berlin Sans FB Demi Bold" size="18.0" />
                                        </font>
                                     </Button>
-                                    <Button fx:id="order_removeBtn" layoutX="180.0" layoutY="339.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="98.0" styleClass="delete-btn" stylesheets="@dashboard.css" text="REMOVE">
+                                    <Button fx:id="order_removeBtn" layoutX="180.0" layoutY="339.0" mnemonicParsing="false" onAction="#orderRemove" prefHeight="49.0" prefWidth="98.0" styleClass="delete-btn" stylesheets="@dashboard.css" text="REMOVE">
                                        <font>
                                           <Font name="Berlin Sans FB Demi Bold" size="18.0" />
                                        </font>
                                     </Button>
-                                    <Button fx:id="order_payBtn" layoutX="41.0" layoutY="419.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="98.0" styleClass="update-btn" stylesheets="@dashboard.css" text="PAY">
+                                    <Button fx:id="order_payBtn" layoutX="41.0" layoutY="419.0" mnemonicParsing="false" onAction="#orderPay" prefHeight="49.0" prefWidth="98.0" styleClass="update-btn" stylesheets="@dashboard.css" text="PAY">
                                        <font>
                                           <Font name="Berlin Sans FB Demi Bold" size="18.0" />
                                        </font>
                                     </Button>
-                                    <Button fx:id="order_receiptBtn" layoutX="180.0" layoutY="419.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="98.0" styleClass="clear-btn" stylesheets="@dashboard.css" text="RECEIPT">
+                                    <Button fx:id="order_receiptBtn" layoutX="180.0" layoutY="419.0" mnemonicParsing="false" onAction="#orderReceipt" prefHeight="49.0" prefWidth="98.0" styleClass="clear-btn" stylesheets="@dashboard.css" text="RECEIPT">
                                        <font>
                                           <Font name="Berlin Sans FB Demi Bold" size="18.0" />
                                        </font>
                                     </Button>
-                                    <TextField fx:id="order_amount" layoutX="138.0" layoutY="239.0" />
+                                    <TextField fx:id="order_amount" layoutX="138.0" layoutY="239.0" onAction="#orderAmount" />
                                     <Label layoutX="31.0" layoutY="243.0" prefHeight="17.0" prefWidth="93.0" text="Amount">
                                        <font>
                                           <Font name="Microsoft JhengHei UI Bold" size="13.0" />

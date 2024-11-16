@@ -36,22 +36,5 @@ public class DataBase {
         return connection;
     }
     
-    
-
-//    public static void main(String[] args) {
-//        Connection conn = connectDb();
-//        PreparedStatement prepare;
-//        ResultSet result;
-//        String sql = "SELECT * FROM admin_db WHERE username = 'admin_1' AND password = '1234'";
-//        try {
-//            prepare = conn.prepareStatement(sql);
-//            result = prepare.executeQuery();
-//            System.out.println(result);
-//
-//        } catch (SQLException ex) {
-//            Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        
-//    }
 
 }

@@ -5,16 +5,22 @@
 package restaurant_management;
 
 //import java.awt.event.ActionEvent;
+import java.io.File;
 import java.sql.Statement;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -40,6 +46,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.view.JasperViewer;
 
 
 public class DashBoardController implements Initializable{
@@ -135,6 +149,9 @@ public class DashBoardController implements Initializable{
     
     @FXML
     private TextField order_amount;
+    
+    @FXML
+    private Label order_balance;
     
     @FXML
     private TableView<product> order_tableView;
@@ -523,6 +540,36 @@ public class DashBoardController implements Initializable{
     |            Order FD           |
     ------------------------------ */
     
+    public void orderReceipt() throws SQLException {
+        // Path to your JRXML and Jasper files
+    String jrxmlPath = "E:\\18. Java Project\\Restaurant_Management\\src\\restaurant_management\\hello.jrxml";
+    String jasperPath = "E:\\18. Java Project\\Restaurant_Management\\src\\restaurant_management\\hello.jasper";
+
+    try {
+        // Compile the report if the .jasper file doesn't exist
+        File jasperFile = new File(jasperPath);
+        if (!jasperFile.exists()) {
+            JasperCompileManager.compileReportToFile(jrxmlPath, jasperPath);
+        }
+
+        // Fill the report
+        Map<String, Object> parameters = new HashMap<>();
+        System.out.println(customerId);
+        parameters.put("data_parameter", customerId); // Ensure `customerId` is properly initialized
+
+        try (Connection connection = DataBase.connectDb()) {
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperPath, parameters, connection);
+
+            // View the report
+            JasperViewer.viewReport(jasperPrint, false); // false to keep the app running
+        }
+    } catch (JRException e) {
+        // Log JasperReports-specific exceptions
+        Logger.getLogger(DashBoardController.class.getName()).log(Level.SEVERE, "Error generating the report", e);
+    }
+        
+    }
+    
     private int customerId;
     public void orderCustomerId() {
 
@@ -577,7 +624,7 @@ public class DashBoardController implements Initializable{
                 System.out.println(result);
                 totalP = result.getDouble("total_price");
             }
-            orderDisplayTotal();
+//            orderDisplayTotal();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -633,7 +680,7 @@ public class DashBoardController implements Initializable{
 
             prepare.executeUpdate();
 
-//            orderDisplayTotal();
+            orderDisplayTotal();
             orderDisplayData();
 
         } catch (Exception e) {
@@ -644,7 +691,7 @@ public class DashBoardController implements Initializable{
     
     // Display total  
     public void orderDisplayTotal() {
-//        orderTotal();
+        orderTotal();
         order_total.setText("$" + String.valueOf(totalP));
 
     }
@@ -664,11 +711,178 @@ public class DashBoardController implements Initializable{
         order_tableView.setItems(orderData);
     }
     
+    private double amount;
+    private double balance;
+    
+    // Amount of cash    
+    public void orderAmount(){
+        orderTotal();
+        
+        Alert alert;
+        
+        if(order_amount.getText().isEmpty() || order_amount.getText() == null || order_amount.getText() == "")
+        {
+            alert = new Alert(AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setContentText("Please type the amount:");
+            alert.showAndWait();
+            
+        }
+        else
+        {
+            amount = Double.parseDouble(order_amount.getText());
+            if(amount < totalP)
+            {
+                order_amount.setText("");
+            }
+            else
+            {
+                balance = amount - totalP;
+                order_balance.setText(String.valueOf(balance));
+            }
+            
+        }
+    }
+    
+    // Pay
+    public void orderPay(){
+        
+        orderCustomerId();
+        orderTotal();
+
+        String sql = "INSERT INTO product_info (customer_id, total, date) VALUES(?,?,?)";
+
+        connect = DataBase.connectDb();
+
+        try {
+
+            Alert alert;
+
+            if (balance == 0 || String.valueOf(balance) == "$0.0" || String.valueOf(balance) == null
+                    || totalP == 0 || String.valueOf(totalP) == "$0.0" || String.valueOf(totalP) == null) {
+                alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Invalid :3");
+                alert.showAndWait();
+            } else {
+
+                alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Are you sure?");
+                Optional<ButtonType> option = alert.showAndWait();
+
+                if (option.get().equals(ButtonType.OK)) {
+                    prepare = connect.prepareStatement(sql);
+                    prepare.setInt(1, customerId);
+                    prepare.setDouble(2, totalP);
+
+                    Date date = new Date();
+                    java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+//                    prepare.setString(3, String.valueOf(sqlDate));
+                    prepare.setDate(3, sqlDate);
+
+                    prepare.executeUpdate();
+
+                    alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Successful!");
+                    alert.showAndWait();
+
+                    order_total.setText("$0.0");
+                    order_balance.setText("$0.0");
+                    order_amount.setText("");
+                    
+//                    orderDisplayData();
+
+                } else {
+                    alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Cancelled!");
+                    alert.showAndWait();
+                }
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // Select row
     
     
+    // Remove row
+    public void orderRemove() {
+
+        String sql = "DELETE FROM product WHERE id = " + item;
+        System.out.println("remove: " + item);
+
+        connect = DataBase.connectDb();
+
+        try {
+            Alert alert;
+
+            if (item == 0 || String.valueOf(item) == null || String.valueOf(item) == "") {
+                alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select the item first");
+                alert.showAndWait();
+            } else {
+                alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Are you sure you want to Remove Item: " + item + "?");
+                Optional<ButtonType> option = alert.showAndWait();
+
+                if (option.get().equals(ButtonType.OK)) {
+                    statement = connect.createStatement();
+                    statement.executeUpdate(sql);
+
+                    alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Successfully Removed!");
+                    alert.showAndWait();
+
+                    orderDisplayData();
+                    orderDisplayTotal();
+
+                    order_amount.setText("");
+                    order_balance.setText("$0.0");
+
+                } else {
+                    alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Cancelled!");
+                    alert.showAndWait();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     
-    
-    
+    private int item;
+    public void orderSelectData() {
+
+        product prod = order_tableView.getSelectionModel().getSelectedItem();
+        int num = order_tableView.getSelectionModel().getSelectedIndex();
+
+        if ((num - 1) < -1) {
+            return;
+        }
+
+        item = prod.getId();
+        System.out.println("select: "+ item);
+        System.out.println("select: "+ prod.getProductId());
+
+    }
    
     
     
