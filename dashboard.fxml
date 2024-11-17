@@ -2,6 +2,7 @@
 
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
 <?import java.lang.String?>
+<?import javafx.scene.chart.AreaChart?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
@@ -58,24 +59,19 @@
                         </AnchorPane>
                         <AnchorPane layoutX="7.0" layoutY="197.0" prefHeight="348.0" prefWidth="200.0" stylesheets="@dashboard.css">
                            <children>
-                              <Button fx:id="dashboard_btn" layoutX="18.0" layoutY="33.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="33.0" prefWidth="164.0" styleClass="nav-btn" stylesheets="@dashboard.css" text="Dashboard" textFill="#4e4c4c">
+                              <Button fx:id="dashboard_btn" layoutX="18.0" layoutY="48.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="55.0" prefWidth="164.0" styleClass="nav-btn" stylesheets="@dashboard.css" text="Dashboard" textFill="#4e4c4c">
                                  <font>
-                                    <Font name="Berlin Sans FB Demi Bold" size="15.0" />
+                                    <Font name="Berlin Sans FB Demi Bold" size="20.0" />
                                  </font>
                               </Button>
-                              <Button fx:id="availableFD_btn" layoutX="18.0" layoutY="80.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="33.0" prefWidth="164.0" styleClass="nav-btn" stylesheets="@dashboard.css" text="Food/Drinks" textFill="#4e4c4c">
+                              <Button fx:id="availableFD_btn" layoutX="18.0" layoutY="122.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="55.0" prefWidth="164.0" styleClass="nav-btn" stylesheets="@dashboard.css" text="Food/Drinks" textFill="#4e4c4c">
                                  <font>
-                                    <Font name="Berlin Sans FB Demi Bold" size="15.0" />
+                                    <Font name="Berlin Sans FB Demi Bold" size="20.0" />
                                  </font>
                               </Button>
-                              <Button layoutX="18.0" layoutY="126.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="164.0" styleClass="nav-btn" stylesheets="@dashboard.css" text="Customers" textFill="#4e4c4c">
+                              <Button fx:id="order_btn" layoutX="18.0" layoutY="198.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="55.0" prefWidth="164.0" styleClass="nav-btn" stylesheets="@dashboard.css" text="Order" textFill="#4e4c4c">
                                  <font>
-                                    <Font name="Berlin Sans FB Demi Bold" size="15.0" />
-                                 </font>
-                              </Button>
-                              <Button fx:id="order_btn" layoutX="18.0" layoutY="174.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="33.0" prefWidth="164.0" styleClass="nav-btn" stylesheets="@dashboard.css" text="Order" textFill="#4e4c4c">
-                                 <font>
-                                    <Font name="Berlin Sans FB Demi Bold" size="15.0" />
+                                    <Font name="Berlin Sans FB Demi Bold" size="20.0" />
                                  </font>
                               </Button>
                               <Button fx:id="logout" layoutX="14.0" layoutY="315.0" mnemonicParsing="false" onAction="#logout" prefHeight="25.0" prefWidth="80.0" styleClass="signout" stylesheets="@dashboard.css" text="Logout" textFill="WHITE">
@@ -96,7 +92,7 @@
                   <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                      <children>
                         <Separator layoutX="-5.0" layoutY="15.0" orientation="VERTICAL" prefHeight="527.0" prefWidth="13.0" />
-                        <AnchorPane fx:id="dashboard_form" layoutX="78.0" layoutY="77.0" prefHeight="555.0" prefWidth="876.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="dashboard_form" layoutX="78.0" layoutY="77.0" prefHeight="555.0" prefWidth="876.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="169.0" prefWidth="862.0" stylesheets="@dashboard.css">
                                  <styleClass>
@@ -174,20 +170,20 @@
                                        </styleClass>
                                     </AnchorPane>
                                     <AnchorPane layoutX="431.0" layoutY="24.0" prefHeight="306.0" prefWidth="409.0" stylesheets="@dashboard.css">
+                                       <styleClass>
+                                          <String fx:value="shadow" />
+                                          <String fx:value="white-bg" />
+                                       </styleClass>
                                        <children>
-                                          <BarChart fx:id="dashboard_ICChart" layoutX="-17.0" layoutY="-39.0" prefHeight="306.0" prefWidth="408.0" title="Income Chart" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                          <AreaChart fx:id="dashboard_ICChart" layoutX="-91.0" layoutY="-68.0" prefHeight="332.0" prefWidth="409.3333333333333" title="Income Chart" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <xAxis>
                                               <CategoryAxis side="BOTTOM" />
                                             </xAxis>
                                             <yAxis>
                                               <NumberAxis side="LEFT" />
                                             </yAxis>
-                                          </BarChart>
+                                          </AreaChart>
                                        </children>
-                                       <styleClass>
-                                          <String fx:value="shadow" />
-                                          <String fx:value="white-bg" />
-                                       </styleClass>
                                     </AnchorPane>
                                  </children>
                               </AnchorPane>
@@ -278,7 +274,7 @@
                               </AnchorPane>
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="order_form" layoutX="112.0" layoutY="123.0" prefHeight="555.0" prefWidth="881.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="order_form" layoutX="112.0" layoutY="123.0" prefHeight="555.0" prefWidth="881.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="23.0" layoutY="14.0" prefHeight="529.0" prefWidth="494.0" stylesheets="@dashboard.css">
                                  <styleClass>

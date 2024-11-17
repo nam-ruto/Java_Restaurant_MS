@@ -31,7 +31,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -60,7 +62,7 @@ public class DashBoardController implements Initializable{
     
     // Dashboard
     @FXML
-    private BarChart<?, ?> dashboard_ICChart;
+    private AreaChart<?, ?> dashboard_ICChart;
 
     @FXML
     private Label dashboard_NC;
@@ -200,6 +202,137 @@ public class DashBoardController implements Initializable{
     private PreparedStatement prepare;
     private Statement statement;
     private ResultSet result;
+    
+    /* ------------------------------ 
+    |           Dashboard           |
+    ------------------------------ */
+    public void dashboardNC() {
+
+        String sql = "SELECT COUNT(id) AS count_id FROM product_info";
+
+        int nc = 0;
+
+        connect = DataBase.connectDb();
+
+        try {
+
+            statement = connect.createStatement();
+            result = statement.executeQuery(sql);
+
+            if (result.next()) {
+                nc = result.getInt("count_id");
+            }
+
+            dashboard_NC.setText(String.valueOf(nc));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void dashboardTI() {
+
+        Date date = new Date();
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+
+        String sql = "SELECT SUM(total) AS sum_total FROM product_info WHERE date = '" + sqlDate + "'";
+
+        connect = DataBase.connectDb();
+
+        double ti = 0;
+
+        try {
+            statement = connect.createStatement();
+            result = statement.executeQuery(sql);
+
+            if (result.next()) {
+                ti = result.getDouble("sum_total");
+            }
+
+            dashboard_TI.setText("$" + String.valueOf(ti));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void dashboardTIncome() {
+
+        String sql = "SELECT SUM(total) AS sum_total FROM product_info";
+
+        connect = DataBase.connectDb();
+
+        double ti = 0;
+
+        try {
+
+            statement = connect.createStatement();
+            result = statement.executeQuery(sql);
+
+            if (result.next()) {
+                ti = result.getDouble("sum_total");
+            }
+            dashboard_TIncome.setText("$" + String.valueOf(ti));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    
+    public void dashboardNOCCChart() {
+
+        try {
+
+            dashboard_NOCChart.getData().clear();
+
+            String sql = "SELECT date, COUNT(id) FROM product_info GROUP BY date ORDER BY date ASC LIMIT 5";
+
+            connect = DataBase.connectDb();
+
+            XYChart.Series chart = new XYChart.Series();
+
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            while (result.next()) {
+                chart.getData().add(new XYChart.Data(result.getString(1), result.getInt(2)));
+            }
+
+            dashboard_NOCChart.getData().add(chart);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void dashboardICC() {
+
+        dashboard_ICChart.getData().clear();
+
+        String sql = "SELECT date, SUM(total) FROM product_info GROUP BY date ORDER BY date ASC LIMIT 7";
+
+        connect = DataBase.connectDb();
+
+        try {
+
+            XYChart.Series chart = new XYChart.Series();
+
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            while (result.next()) {
+
+                chart.getData().add(new XYChart.Data(result.getString(1), result.getDouble(2)));
+
+            }
+
+            dashboard_ICChart.getData().add(chart);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     
     /* ------------------------------ 
     |         Available FD          |
@@ -1029,7 +1162,13 @@ public class DashBoardController implements Initializable{
             dashboard_btn.setStyle("-fx-background-color: #3796a7; -fx-text-fill: #fff; -fx-border-width: 0px;");
             availableFD_btn.setStyle("-fx-background-color: linear-gradient(to bottom right, #C9D6FF, #E2E2E2);");
             order_btn.setStyle("-fx-background-color: linear-gradient(to bottom right, #C9D6FF, #E2E2E2);");
-
+            
+            dashboardNC();
+            dashboardTI();
+            dashboardTIncome();
+            dashboardNOCCChart();
+            dashboardICC();
+            
         }
         else if(event.getSource()==availableFD_btn)
         {
@@ -1066,9 +1205,16 @@ public class DashBoardController implements Initializable{
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Initialization logic if needed
+        dashboardNC();
+        dashboardTI();
+        dashboardTIncome();
+        dashboardNOCCChart();
+        dashboardICC();
+        
         availableFDStatus();
         availableFDTypes();
         availableFDShowData();
+        
         orderProductId();
         orderProductName();
         orderSpinner();
